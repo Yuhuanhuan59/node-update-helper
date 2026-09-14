@@ -68,11 +68,11 @@ function nodeCard(node) {
   const button = copyButton('复制', 'node-copy', node.import_url);
   button.setAttribute('aria-label', `复制${node.name}一键导入链接`);
   const address = node.fields.find(f => /address|地址/i.test(f.label))?.value || '展开查看节点信息';
-  const port = node.fields.find(f => /port|端口/i.test(f.label))?.value;
-  main.append(title, element('p', 'address', `${address}${port ? ` · ${port}` : ''}`));
+  main.append(title, element('p', 'address', address));
   top.append(icon, main, button);
   card.append(top);
   const details = element('details');
+  details.addEventListener('toggle', () => card.classList.toggle('is-open', details.open));
   details.append(element('summary', '', '参数与导入链接'));
   const table = element('table');
   table.setAttribute('aria-label', `${node.name}参数`);
@@ -107,6 +107,7 @@ function sourceCard(source) {
   origin.append(element('h2', '', source.name));
   info.append(origin);
   const logo = element('img', 'source-logo');
+  logo.classList.add(`source-logo-${source.id}`);
   logo.src = `./icons/${source.id}.svg`;
   logo.alt = '';
   name.append(logo, info);
@@ -135,9 +136,8 @@ function valid(data) {
 }
 function render(data, cached = false) {
   snapshot = data;
-  $('checked').textContent = compactTime(data.checked_at);
-  const healthy = data.sources.filter(s => (s.status === 'ok' || s.status === 'partial') && !s.stale).length;
-  $('health').textContent = `${healthy}/2个来源获取正常 · 30分钟自动检测`;
+  $('checked').textContent = `北京时间 ${compactTime(data.checked_at)}`;
+  $('health').textContent = '30分钟自动检测';
   const age = Date.now() - Date.parse(data.checked_at);
   const alerts = [];
   if (cached) alerts.push('暂时无法读取在线结果，正在显示本机缓存。');
@@ -155,8 +155,13 @@ function render(data, cached = false) {
   for (const [id, number] of [['copy-1', 1], ['copy-2', 2]]) $(id).disabled = !source?.nodes.some(node => node.id === number);
   // Keep disclosure state when the background read refreshes cards.
   const opened = new Set([...document.querySelectorAll('.source')].flatMap((card, i) => [...card.querySelectorAll('details')].flatMap((d, j) => d.open ? [`${i}:${j}`] : [])));
-  $('sources').replaceChildren(...data.sources.map(sourceCard));
-  document.querySelectorAll('.source').forEach((card, i) => card.querySelectorAll('details').forEach((d, j) => { d.open = opened.has(`${i}:${j}`); }));
+  const displayOrder = { gitlab: 0, github: 1 };
+  const visibleSources = [...data.sources].sort((a, b) => displayOrder[a.id] - displayOrder[b.id]);
+  $('sources').replaceChildren(...visibleSources.map(sourceCard));
+  document.querySelectorAll('.source').forEach((sourceCardElement, i) => sourceCardElement.querySelectorAll('details').forEach((details, j) => {
+    details.open = opened.has(`${i}:${j}`);
+    details.closest('.node')?.classList.toggle('is-open', details.open);
+  }));
 }
 async function refresh(manual = false) {
   if (busy) return;
@@ -203,7 +208,8 @@ async function refresh(manual = false) {
 }
 function setRefreshing(active) {
   $('refresh').disabled = active;
-  $('refresh').replaceChildren(element('span', '', active ? '…' : '↻'), document.createTextNode(active ? '读取中' : '刷新节点'));
+  $('refresh').classList.toggle('is-loading', active);
+  $('refresh').setAttribute('aria-busy', String(active));
 }
 for (const [id, number] of [['copy-1', 1], ['copy-2', 2]]) {
   $(id).addEventListener('click', () => {
@@ -213,6 +219,11 @@ for (const [id, number] of [['copy-1', 1], ['copy-2', 2]]) {
 }
 $('refresh').addEventListener('click', () => refresh(true));
 $('close-copy').addEventListener('click', () => $('manual-copy').close());
+const backToTop = $('back-to-top');
+function updateBackToTop() { backToTop.classList.toggle('is-visible', window.scrollY > 560); }
+backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+window.addEventListener('scroll', updateBackToTop, { passive: true });
+updateBackToTop();
 try { const saved = JSON.parse(localStorage.getItem(LOCAL_KEY)); if (valid(saved)) render(saved, true); } catch { /* Ignore invalid local cache. */ }
 if (!snapshot && valid(window.__NODE_DATA__)) render(window.__NODE_DATA__);
 refresh();

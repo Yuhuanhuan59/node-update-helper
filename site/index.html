@@ -14,7 +14,7 @@
 <body>
   <div class="page-shell">
     <header class="topbar">
-      <a class="brand" href="./"><span class="brand-mark"><img src="./icons/brand-logo.png" width="73" height="38" alt=""></span><span class="brand-copy"><strong>节点助手</strong><span id="health">—/2个来源获取正常 · 30分钟自动检测</span></span></a>
+      <a class="brand" href="./"><span class="brand-mark"><img src="./icons/brand-logo.png" width="73" height="38" alt=""></span><span class="brand-copy"><strong>节点助手</strong><span id="health">30分钟自动检测</span></span></a>
     </header>
     <main>
     <div id="notice" class="notice" role="status" hidden></div>
@@ -22,7 +22,7 @@
       <div class="summary-title">
         <span id="comparison-icon" class="comparison-icon" aria-hidden="true">✓</span>
         <div class="summary-copy"><h1 id="comparison">正在比较</h1><p id="selection">正在选择可用来源…</p><p class="checked-line"><span>最后检测</span><strong id="checked">正在读取…</strong></p></div>
-        <button id="refresh" class="refresh-button" type="button"><span aria-hidden="true">↻</span>刷新节点</button>
+        <button id="refresh" class="refresh-button" type="button"><span class="refresh-icon" aria-hidden="true">↻</span><span>刷新节点</span></button>
       </div>
       <div class="quick-actions">
         <button id="copy-1" class="primary copy-button" disabled>复制节点1</button>
@@ -35,6 +35,11 @@
     <footer>内容来自原作者公开 Wiki · 本工具只读取和整理公开信息</footer>
     </main>
   </div>
+  <button id="back-to-top" class="back-to-top" type="button" aria-label="回到页面顶部" title="回到顶部">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M8 14.5 16 6l8 8.5M16 7v19" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
   <div id="toast" role="status" aria-live="polite" hidden></div>
   <dialog id="manual-copy"><h2>手动复制</h2><p>浏览器未允许自动复制，请长按或全选下方链接。</p><textarea id="copy-text" readonly aria-label="待复制内容"></textarea><button id="close-copy" class="primary">完成</button></dialog>
   <noscript>请启用 JavaScript 以读取节点信息。</noscript>
