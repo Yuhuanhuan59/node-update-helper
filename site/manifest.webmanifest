@@ -1,0 +1,10 @@
+{
+  "id": "./", "name": "节点助手", "short_name": "节点助手",
+  "description": "双源节点更新检测与一键复制", "lang": "zh-CN",
+  "start_url": "./", "scope": "./", "display": "standalone",
+  "background_color": "#edf4ff", "theme_color": "#5b63f5",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

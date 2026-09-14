@@ -1,0 +1,240 @@
+window.__NODE_DATA__ = {
+  "schema_version": 1,
+  "checked_at": "2026-09-14T01:29:08+00:00",
+  "interval_minutes": 30,
+  "sources": [
+    {
+      "id": "github",
+      "name": "GitHub",
+      "url": "https://github.com/Alvin9999-newpac/fanqiang/wiki/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7",
+      "content_url": "https://raw.githubusercontent.com/wiki/Alvin9999-newpac/fanqiang/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7.md",
+      "status": "ok",
+      "stale": false,
+      "checked_at": "2026-09-14T01:29:05+00:00",
+      "last_success_at": "2026-09-14T01:29:08+00:00",
+      "page_edited_at": "2026-09-03T23:12:27Z",
+      "page_edit_url": "https://github.com/Alvin9999-newpac/fanqiang/wiki/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7",
+      "author_updated": {
+        "raw": "北京时间2026年9月4日7点30分更新节点2",
+        "iso": "2026-09-04T07:30:00+08:00",
+        "precision": "minute"
+      },
+      "nodes": [
+        {
+          "id": 1,
+          "name": "节点1",
+          "protocol": "vmess",
+          "fields": [
+            {
+              "label": "Address（地址）",
+              "value": "2001:bc8:32d7:1a9::2"
+            },
+            {
+              "label": "Port（端口）",
+              "value": "18901"
+            },
+            {
+              "label": "UUID（用户ID）",
+              "value": "3a966d20-7b9d-48cc-ba2c-8d38161b6d3a"
+            },
+            {
+              "label": "alterid（额外ID）",
+              "value": "0"
+            },
+            {
+              "label": "security（加密方式）",
+              "value": "auto"
+            },
+            {
+              "label": "network（传输协议）",
+              "value": "ws"
+            },
+            {
+              "label": "headerType（伪装类型）",
+              "value": "none"
+            },
+            {
+              "label": "host（伪装域名）",
+              "value": ""
+            },
+            {
+              "label": "path（路径）",
+              "value": "/github.com/Alvin9999-newpac/fanqiang"
+            },
+            {
+              "label": "TLS (传输层安全)",
+              "value": "不填"
+            }
+          ],
+          "notes": "使用IPv6节点，本地网络需要开启IPv6支持。手机的电话卡流量通常自带IPv6网络，可以使用IPv6地址。手机可以通过热点功能将IPv6网络共享给电脑，这样电脑也能连接到IPv6网络。如果希望电脑自动启用宽带的IPv6网络，请参考相关的IPv6开启与配置教程。",
+          "import_url": "vmess://ew0KICAidiI6ICIyIiwNCiAgInBzIjogInZtZXNzLXdzLWlwdjYiLA0KICAiYWRkIjogIjIwMDE6YmM4OjMyZDc6MWE5OjoyIiwNCiAgInBvcnQiOiAiMTg5MDEiLA0KICAiaWQiOiAiM2E5NjZkMjAtN2I5ZC00OGNjLWJhMmMtOGQzODE2MWI2ZDNhIiwNCiAgImFpZCI6ICIwIiwNCiAgInNjeSI6ICJhdXRvIiwNCiAgIm5ldCI6ICJ3cyIsDQogICJ0eXBlIjogIm5vbmUiLA0KICAicGF0aCI6ICIvZ2l0aHViLmNvbS9BbHZpbjk5OTktbmV3cGFjL2ZhbnFpYW5nIiwNCiAgInRscyI6ICIiLA0KICAic25pIjogIiIsDQogICJhbHBuIjogIiIsDQogICJmcCI6ICIiLA0KICAiaW5zZWN1cmUiOiAiMCIsDQogICJ2Y24iOiAiIiwNCiAgInBjcyI6ICIiDQp9",
+          "fingerprint": "60e3d94d2d1fd6c5bdfcdec380076c2b367dea70fbe458c5be148710039f00eb"
+        },
+        {
+          "id": 2,
+          "name": "节点2",
+          "protocol": "anytls",
+          "fields": [
+            {
+              "label": "Address（地址）",
+              "value": "ip5.934618.xyz"
+            },
+            {
+              "label": "Port（端口）",
+              "value": "30099"
+            },
+            {
+              "label": "Password（密码）",
+              "value": "github.com/Alvin9999-newpac/fanqiang"
+            },
+            {
+              "label": "TLS（传输层安全）",
+              "value": "tls"
+            },
+            {
+              "label": "SNI (serverName)",
+              "value": "ip5.934618.xyz"
+            },
+            {
+              "label": "Alpn",
+              "value": "h3"
+            },
+            {
+              "label": "AllowInsecure （跳过证书验证）",
+              "value": "false"
+            }
+          ],
+          "notes": "（使用anytls节点，需支持anytls协议的客户端，windows使用最新版v2rayN客户端，安卓手机使用NekoBoxForAndroid，苹果手机使用shadowrocket，Mac使用v2rayN客户端，Linux使用v2rayN客户端）",
+          "import_url": "anytls://github.com%2FAlvin9999-newpac%2Ffanqiang@ip5.934618.xyz:30099?security=tls&sni=ip5.934618.xyz&insecure=0&allowInsecure=0&type=tcp&headerType=none#github-anytls-1",
+          "fingerprint": "8a6439294c5a77cc9b81f5abaefe1cdea210a6e85949604fef5520f268595803"
+        }
+      ],
+      "warnings": [],
+      "error": null
+    },
+    {
+      "id": "gitlab",
+      "name": "GitLab",
+      "url": "https://gitlab.com/zhifan999/fq/-/wikis/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7",
+      "content_url": "https://gitlab.com/api/v4/projects/zhifan999%2Ffq/wikis/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7",
+      "status": "ok",
+      "stale": false,
+      "checked_at": "2026-09-14T01:29:05+00:00",
+      "last_success_at": "2026-09-14T01:29:08+00:00",
+      "page_edited_at": "2026-09-03T23:13:47Z",
+      "page_edit_url": "https://gitlab.com/zhifan999/fq/-/wikis/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7/history",
+      "author_updated": {
+        "raw": "北京时间2026年9月4日7点30分更新2",
+        "iso": "2026-09-04T07:30:00+08:00",
+        "precision": "minute"
+      },
+      "nodes": [
+        {
+          "id": 1,
+          "name": "节点1",
+          "protocol": "vmess",
+          "fields": [
+            {
+              "label": "Address（地址）",
+              "value": "2001:bc8:32d7:1a9::2"
+            },
+            {
+              "label": "Port（端口）",
+              "value": "18901"
+            },
+            {
+              "label": "UUID（用户ID）",
+              "value": "3a966d20-7b9d-48cc-ba2c-8d38161b6d3a"
+            },
+            {
+              "label": "alterid（额外ID）",
+              "value": "0"
+            },
+            {
+              "label": "security（加密方式）",
+              "value": "auto"
+            },
+            {
+              "label": "network（传输协议）",
+              "value": "ws"
+            },
+            {
+              "label": "headerType（伪装类型）",
+              "value": "none"
+            },
+            {
+              "label": "host（伪装域名）",
+              "value": ""
+            },
+            {
+              "label": "path（路径）",
+              "value": "/github.com/Alvin9999-newpac/fanqiang"
+            },
+            {
+              "label": "TLS (传输层安全)",
+              "value": "不填"
+            }
+          ],
+          "notes": "使用IPv6节点，本地网络需要开启IPv6支持。手机的电话卡流量通常自带IPv6网络，可以使用IPv6地址。手机可以通过热点功能将IPv6网络共享给电脑，这样电脑也能连接到IPv6网络。如果希望电脑自动启用宽带的IPv6网络，请参考相关的IPv6开启与配置教程。",
+          "import_url": "vmess://ew0KICAidiI6ICIyIiwNCiAgInBzIjogInZtZXNzLXdzLWlwdjYiLA0KICAiYWRkIjogIjIwMDE6YmM4OjMyZDc6MWE5OjoyIiwNCiAgInBvcnQiOiAiMTg5MDEiLA0KICAiaWQiOiAiM2E5NjZkMjAtN2I5ZC00OGNjLWJhMmMtOGQzODE2MWI2ZDNhIiwNCiAgImFpZCI6ICIwIiwNCiAgInNjeSI6ICJhdXRvIiwNCiAgIm5ldCI6ICJ3cyIsDQogICJ0eXBlIjogIm5vbmUiLA0KICAicGF0aCI6ICIvZ2l0aHViLmNvbS9BbHZpbjk5OTktbmV3cGFjL2ZhbnFpYW5nIiwNCiAgInRscyI6ICIiLA0KICAic25pIjogIiIsDQogICJhbHBuIjogIiIsDQogICJmcCI6ICIiLA0KICAiaW5zZWN1cmUiOiAiMCIsDQogICJ2Y24iOiAiIiwNCiAgInBjcyI6ICIiDQp9",
+          "fingerprint": "60e3d94d2d1fd6c5bdfcdec380076c2b367dea70fbe458c5be148710039f00eb"
+        },
+        {
+          "id": 2,
+          "name": "节点2",
+          "protocol": "anytls",
+          "fields": [
+            {
+              "label": "Address（地址）",
+              "value": "ip5.934618.xyz"
+            },
+            {
+              "label": "Port（端口）",
+              "value": "30099"
+            },
+            {
+              "label": "Password（密码）",
+              "value": "github.com/Alvin9999-newpac/fanqiang"
+            },
+            {
+              "label": "TLS（传输层安全）",
+              "value": "tls"
+            },
+            {
+              "label": "SNI (serverName)",
+              "value": "ip5.934618.xyz"
+            },
+            {
+              "label": "Alpn",
+              "value": "h3"
+            },
+            {
+              "label": "AllowInsecure （跳过证书验证）",
+              "value": "false"
+            }
+          ],
+          "notes": "（使用anytls节点，需支持anytls协议的客户端，windows使用最新版v2rayN客户端，安卓手机使用最新版NekoBoxForAndroid，苹果手机使用shadowrocket，Mac使用v2rayN客户端，Linux使用v2rayN客户端）",
+          "import_url": "anytls://github.com%2FAlvin9999-newpac%2Ffanqiang@ip5.934618.xyz:30099?security=tls&sni=ip5.934618.xyz&insecure=0&allowInsecure=0&type=tcp&headerType=none#github-anytls-1",
+          "fingerprint": "8a6439294c5a77cc9b81f5abaefe1cdea210a6e85949604fef5520f268595803"
+        }
+      ],
+      "warnings": [],
+      "error": null
+    }
+  ],
+  "comparison": {
+    "status": "same",
+    "nodes": {
+      "1": true,
+      "2": true
+    },
+    "includes_stale": false
+  },
+  "latest": {
+    "source_id": "github",
+    "basis": "author",
+    "uncertain": false,
+    "stale": false,
+    "reason": "两站节点参数与导入配置一致，可任选来源。"
+  }
+};
