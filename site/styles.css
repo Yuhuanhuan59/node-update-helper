@@ -348,7 +348,9 @@ footer { padding: 50px 0 15px; color: #8792b2; font-size: 19px; line-height: 26p
 .back-to-top {
   position: fixed;
   right: max(24px, calc((100vw - 750px) / 2 + 24px));
-  bottom: 34px;
+  top: calc(72vh - 38px);
+  top: calc(72dvh - 38px);
+  bottom: auto;
   z-index: 18;
   display: grid;
   width: 76px;
