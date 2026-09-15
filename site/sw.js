@@ -1,5 +1,5 @@
 const PREFIX = `node-update-helper-${new URL(self.registration.scope).pathname}-`;
-const CACHE = `${PREFIX}v9`;
+const CACHE = `${PREFIX}v10`;
 const SHELL = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icons/favicon.png', './icons/brand-logo.png', './icons/github.svg', './icons/gitlab.svg', './icons/icon-192.png', './icons/icon-512.png'];
 self.addEventListener('install', event => { event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', event => {
