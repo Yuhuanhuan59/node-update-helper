@@ -10,7 +10,7 @@
 4. 打开 **Actions → Update nodes and deploy Pages → Run workflow**，选择默认分支并运行。首次上传时，如果任务因为尚未开启 Pages 而失败，完成第3步后重新运行即可。
 5. 等 `build` 和 `deploy` 成功，点击任务内的 `github-pages` 地址，或在 Settings → Pages 中打开站点。通常为 `https://你的用户名.github.io/node-update-helper/`。
 
-以后默认在每小时第17、47分钟（UTC，转换到北京时间分钟相同）自动检测。新提交前端或脚本后也会自动发布。无需手动修改仓库名、基础路径或填入 Token。
+以后默认在北京时间每小时的00分、30分自动检测。新提交前端或脚本后也会自动发布。无需手动修改仓库名、基础路径或填入 Token。
 
 ### 上传方式
 
