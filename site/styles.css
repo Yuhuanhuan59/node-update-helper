@@ -149,14 +149,16 @@ main { width: 750px; padding: 0 34px 49px; }
   grid-row: 3;
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 13px;
   margin: 0;
   color: #9aa5c2;
-  font-size: 21px;
+  font-size: 18px;
   line-height: 28px;
   white-space: nowrap;
 }
-.checked-line strong { font-weight: 400; font-variant-numeric: tabular-nums; }
+.time-item { display: inline-flex; align-items: baseline; gap: 6px; }
+.time-separator { color: #b0b8cf; }
+.checked-line strong { min-width: 0; font-weight: 400; font-variant-numeric: tabular-nums; letter-spacing: -.35px; }
 .refresh-button {
   grid-column: 3;
   grid-row: 1;
