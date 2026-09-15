@@ -80,10 +80,14 @@ main { width: 750px; padding: 0 34px 49px; }
   -webkit-backdrop-filter: blur(49px);
 }
 .summary-card {
+  display: grid;
+  grid-template-rows: 123px 38px 94px 25px 26px;
+  align-content: start;
   width: 682px;
   height: 418px;
   padding: 52px 37px 36px;
   overflow: hidden;
+  overflow-anchor: none;
   border-radius: 51px;
 }
 .summary-card::before {
@@ -94,6 +98,7 @@ main { width: 750px; padding: 0 34px 49px; }
   content: "";
 }
 .summary-title {
+  grid-row: 1;
   position: relative;
   z-index: 1;
   display: grid;
@@ -162,11 +167,11 @@ main { width: 750px; padding: 0 34px 49px; }
   height: 62px;
   min-height: 62px;
   padding: 0 16px;
-  border: 2px solid rgba(255, 255, 255, .9);
+  border: 0;
   border-radius: 50px;
-  color: #3f3ee3;
-  background: rgba(255, 255, 255, .62);
-  box-shadow: 0 18px 47px rgba(74, 82, 180, .1);
+  color: #3c34dc;
+  background: linear-gradient(144.638deg, #edf1ff, #eee4ff);
+  box-shadow: none;
   backdrop-filter: blur(37px);
   -webkit-backdrop-filter: blur(37px);
   font-size: 27px;
@@ -174,8 +179,10 @@ main { width: 750px; padding: 0 34px 49px; }
   white-space: nowrap;
 }
 .refresh-icon { display: inline-block; font-size: 41px; font-weight: 400; }
-.refresh-button.is-loading .refresh-icon { animation: refresh-spin .8s linear infinite; }
+.refresh-button:hover:not(:disabled),
+.refresh-button:active:not(:disabled) { transform: none; }
 .quick-actions {
+  grid-row: 3;
   position: relative;
   z-index: 1;
   display: grid;
@@ -183,7 +190,7 @@ main { width: 750px; padding: 0 34px 49px; }
   gap: 19px;
   height: 94px;
   min-height: 94px;
-  margin-top: 38px;
+  margin-top: 0;
   contain: layout;
 }
 .primary {
@@ -203,11 +210,12 @@ main { width: 750px; padding: 0 34px 49px; }
   line-height: 34px;
 }
 .copy-note {
+  grid-row: 5;
   position: relative;
   z-index: 1;
   height: 26px;
   min-height: 26px;
-  margin: 25px 0 0;
+  margin: 0;
   color: #8190b8;
   font-size: 21px;
   line-height: 26px;
@@ -388,8 +396,6 @@ footer { padding: 50px 0 15px; color: #8792b2; font-size: 19px; line-height: 26p
 .back-to-top:hover:not(:disabled) { transform: none; translate: 0 -2px; }
 .back-to-top:active:not(:disabled) { transform: none; translate: 0 0; }
 .back-to-top svg { width: 36px; height: 36px; }
-
-@keyframes refresh-spin { to { rotate: 360deg; } }
 
 #toast {
   position: fixed;

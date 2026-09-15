@@ -141,7 +141,9 @@ function render(data, cached = false) {
   const age = Date.now() - Date.parse(data.checked_at);
   const alerts = [];
   if (cached) alerts.push('暂时无法读取在线结果，正在显示本机缓存。');
-  if (age > 90 * 60 * 1000) alerts.push('后台检测结果已超过90分钟，请检查 GitHub Actions 是否正常运行。');
+  // Scheduled GitHub Actions can be delayed for several hours during busy periods.
+  const staleAfterMinutes = Math.max(12 * 60, Number(data.interval_minutes || 30) * 24);
+  if (age > staleAfterMinutes * 60 * 1000) alerts.push('后台检测已超过12小时未更新，请检查 GitHub Actions 是否正常运行。');
   if (data.sources.some(s => s.stale)) alerts.push('部分来源本次获取失败，卡片保留上次成功数据。');
   $('notice').textContent = alerts.join(' ');
   $('notice').hidden = !alerts.length;
