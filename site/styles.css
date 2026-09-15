@@ -169,8 +169,8 @@ main { width: 750px; padding: 0 34px 49px; }
   padding: 0 16px;
   border: 0;
   border-radius: 50px;
-  color: #3c34dc;
-  background: linear-gradient(144.638deg, #edf1ff, #eee4ff);
+  color: #5e59e6;
+  background: linear-gradient(144.638deg, rgba(237, 241, 255, .6), rgba(238, 228, 255, .6));
   box-shadow: none;
   backdrop-filter: blur(37px);
   -webkit-backdrop-filter: blur(37px);
