@@ -11,6 +11,12 @@ function compactTime(value, seconds = false) {
   const parts = Object.fromEntries(new Intl.DateTimeFormat('zh-CN', options).formatToParts(new Date(value)).map(part => [part.type, part.value]));
   return `${parts.month}-${parts.day} ${parts.hour}:${parts.minute}${seconds ? `:${parts.second}` : ''}`;
 }
+function fullTime(value = new Date()) {
+  if (!value || Number.isNaN(Date.parse(value))) return '未获取';
+  const options = { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('zh-CN', options).formatToParts(new Date(value)).map(part => [part.type, part.value]));
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+}
 function element(tag, className, text) {
   const el = document.createElement(tag);
   if (className) el.className = className;
@@ -136,8 +142,9 @@ function valid(data) {
 }
 function render(data, cached = false) {
   snapshot = data;
-  $('checked').textContent = `北京时间 ${compactTime(data.checked_at)}`;
-  $('health').textContent = '30分钟自动检测';
+  $('checked').textContent = fullTime(data.checked_at);
+  $('refreshed').textContent = fullTime();
+  $('health').textContent = '每30分钟后台自动检测';
   const age = Date.now() - Date.parse(data.checked_at);
   const alerts = [];
   if (cached) alerts.push('暂时无法读取在线结果，正在显示本机缓存。');
