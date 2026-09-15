@@ -5,8 +5,8 @@ on:
     branches: [main, master]
   workflow_dispatch:
   schedule:
-    # Every 30 minutes, offset from the busy start of the hour. UTC.
-    - cron: '17,47 * * * *'
+    # Beijing time: at minute 00 and 30 of every hour (UTC differs only by whole hours).
+    - cron: '0,30 * * * *'
 
 permissions:
   contents: read
