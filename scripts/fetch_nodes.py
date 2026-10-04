@@ -18,15 +18,22 @@ from urllib.request import Request, urlopen
 SLUG = quote("v2ray免费账号", safe="")
 SOURCES = {
     "github": {
-        "name": "GitHub",
+        "name": "GitHub · V2Ray",
         "url": f"https://github.com/Alvin9999-newpac/fanqiang/wiki/{SLUG}",
         "content_url": f"https://raw.githubusercontent.com/wiki/Alvin9999-newpac/fanqiang/{SLUG}.md",
     },
     "gitlab": {
-        "name": "GitLab",
+        "name": "GitLab · V2Ray",
         "url": f"https://gitlab.com/zhifan999/fq/-/wikis/{SLUG}",
         "content_url": f"https://gitlab.com/api/v4/projects/zhifan999%2Ffq/wikis/{SLUG}",
     },
+}
+SS_SLUG = quote("ss免费账号", safe="")
+SS_SOURCE = {
+    "id": "ss_gitlab",
+    "name": "GitLab · SS/SSR",
+    "url": f"https://gitlab.com/zhifan999/fq/-/wikis/{SS_SLUG}",
+    "content_url": f"https://gitlab.com/api/v4/projects/zhifan999%2Ffq/wikis/{SS_SLUG}",
 }
 MAX_BYTES = 4 * 1024 * 1024
 CST = timezone(timedelta(hours=8))
@@ -196,6 +203,92 @@ def parse_nodes(markdown):
     return nodes
 
 
+def parse_ss_nodes(markdown):
+    """Read the SS wiki's numbered SSR/SS sections and horizontal tables."""
+    lines = markdown.replace("\r\n", "\n").splitlines()
+    sections = []
+    fenced = False
+    for pos, line in enumerate(lines):
+        if re.match(r"^\s*(`{3,}|~{3,})", line):
+            fenced = not fenced
+            continue
+        match = None if fenced else heading(line)
+        if match and not match.group(3):
+            sections.append((pos, match))
+    nodes = []
+    for number in (1, 2):
+        candidates = [(pos, match) for pos, match in sections if int(match.group(1)) == number]
+        if len(candidates) != 1:
+            raise ValueError(f"SS 页面节点{number}标题缺失或重复")
+        start, title = candidates[0]
+        end = next((pos for pos, _ in sections if pos > start), len(lines))
+        section = lines[start + 1:end]
+        protocol = (title.group(2) or "").lower()
+        if protocol not in ("ss", "ssr"):
+            raise ValueError(f"SS 页面节点{number}协议未识别")
+        link_heading = re.compile(rf"^(?:{protocol}\s*(?:节点)?\s*链接|节点\s*{number}\s*一键导入链接)$", re.I)
+        link_at = next((i for i, line in enumerate(section) if link_heading.fullmatch(plain(line))), None)
+        if link_at is None:
+            raise ValueError(f"SS 页面节点{number}缺少链接标题")
+        link_lines = []
+        for line in section[link_at + 1:]:
+            if re.match(r"^\s*(?:#{1,6}\s|\*\*[^*]|\*{3,}\s*$|---+\s*$)", line):
+                break
+            link_lines.append(line)
+        links = list(dict.fromkeys(html.unescape(link) for link in re.findall(
+            rf"{protocol}://[^\s`<>\"\)]+", "\n".join(link_lines), flags=re.I)))
+        if len(links) != 1:
+            raise ValueError(f"SS 页面节点{number}链接缺失或不唯一")
+        link = links[0]
+        if protocol == "ss":
+            canonical_link(link)
+        else:
+            encoded = link.split("://", 1)[1].split("#", 1)[0]
+            decoded = base64.urlsafe_b64decode(encoded + "=" * (-len(encoded) % 4)).decode("utf-8")
+            if not re.match(r"^.+:\d+:[^:]+:[^:]+:[^:]+:.+", decoded):
+                raise ValueError("SSR 链接缺少必需的连接参数")
+        rows = []
+        for line in section[:link_at]:
+            if line.strip().startswith("|"):
+                rows.append([plain(cell) for cell in re.split(r"(?<!\\)\|", line.strip().strip("|"))])
+        rows = [row for row in rows if not all(re.fullmatch(r"[:\s-]*", cell) for cell in row)]
+        if len(rows) != 2 or len(rows[0]) < 5 or len(rows[1]) < len(rows[0]):
+            raise ValueError(f"SS 页面节点{number}参数表缺失或不完整")
+        fields = [{"label": label, "value": value} for label, value in zip(rows[0], rows[1]) if label]
+        params = {re.sub(r"\s+", "", field["label"]): field["value"] for field in fields}
+        fingerprint = hashlib.sha256(json.dumps({"link": link.split("#", 1)[0], "fields": params}, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+        notes = [plain(line) for line in section[:link_at] if line.strip() and not line.strip().startswith("|")]
+        nodes.append({"id": number, "name": f"节点{number}", "protocol": protocol, "fields": fields,
+                      "notes": "\n".join(notes), "import_url": link, "fingerprint": fingerprint})
+    return nodes
+
+
+def fetch_ss_source(previous=None, fetch=request_text):
+    config = SS_SOURCE
+    result = {"id": config["id"], **config, "status": "error", "stale": False, "checked_at": now_iso(),
+              "last_success_at": None, "page_edited_at": None, "page_edit_url": config["url"] + "/history",
+              "author_updated": {"raw": None, "iso": None, "precision": None}, "nodes": [], "warnings": [], "error": None}
+    try:
+        markdown = json.loads(fetch(config["content_url"]))["content"]
+        result["nodes"] = parse_ss_nodes(markdown)
+        result["author_updated"] = parse_author_time(markdown)
+        try:
+            result["page_edited_at"] = parse_edit_time("gitlab", fetch(result["page_edit_url"]))
+        except Exception as exc:
+            result["warnings"].append(f"编辑时间获取失败：{type(exc).__name__}: {exc}")
+        if result["author_updated"]["raw"] and not result["author_updated"]["iso"]:
+            result["warnings"].append("作者时间格式未识别，保留原文")
+        result["status"] = "partial" if result["warnings"] else "ok"
+        result["last_success_at"] = now_iso()
+    except Exception as exc:
+        if previous and len(previous.get("nodes", [])) == 2:
+            for field in ("nodes", "author_updated", "page_edited_at", "last_success_at"):
+                result[field] = copy.deepcopy(previous.get(field))
+            result["stale"] = True
+        result["error"] = f"{type(exc).__name__}: {exc}"
+    return result
+
+
 def fetch_source(key, previous=None, fetch=request_text):
     config = SOURCES[key]
     result = {"id": key, **config, "status": "error", "stale": False, "checked_at": now_iso(),
@@ -283,6 +376,15 @@ def valid_snapshot(data):
         for node in nodes:
             if not all(isinstance(node.get(key), str) for key in ("name", "protocol", "import_url", "fingerprint")) or not isinstance(node.get("fields"), list):
                 return False
+    ss_source = data.get("ss_source")
+    if ss_source is not None:
+        if not isinstance(ss_source, dict) or ss_source.get("id") != SS_SOURCE["id"] or not isinstance(ss_source.get("nodes"), list):
+            return False
+        nodes = ss_source["nodes"]
+        if nodes and (len(nodes) != 2 or {node.get("id") for node in nodes if isinstance(node, dict)} != {1, 2}):
+            return False
+        if any(not isinstance(node.get("import_url"), str) or not isinstance(node.get("fields"), list) for node in nodes):
+            return False
     return True
 
 
@@ -302,11 +404,14 @@ def update(output, previous_url=None):
         except Exception as exc:
             print(f"Previous Pages snapshot unavailable: {type(exc).__name__}")
     previous = {s["id"]: s for s in old.get("sources", [])}
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        results = list(executor.map(lambda key: fetch_source(key, previous.get(key)), SOURCES))
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        result_jobs = [executor.submit(fetch_source, key, previous.get(key)) for key in SOURCES]
+        ss_job = executor.submit(fetch_ss_source, old.get("ss_source"))
+        results = [job.result() for job in result_jobs]
+        ss_source = ss_job.result()
     comparison, latest = summarize(results)
     data = {"schema_version": 1, "checked_at": now_iso(), "interval_minutes": 30,
-            "sources": results, "comparison": comparison, "latest": latest}
+            "sources": results, "ss_source": ss_source, "comparison": comparison, "latest": latest}
     output.parent.mkdir(parents=True, exist_ok=True)
     temp = output.with_suffix(".tmp")
     serialized = json.dumps(data, ensure_ascii=False, indent=2)
@@ -321,6 +426,7 @@ def update(output, previous_url=None):
     js_temp.replace(js_output)
     for source in results:
         print(f"{source['name']}: {source['status']}, stale={source['stale']}, nodes={len(source['nodes'])}")
+    print(f"{ss_source['name']}: {ss_source['status']}, stale={ss_source['stale']}, nodes={len(ss_source['nodes'])}")
     return data
 
 
