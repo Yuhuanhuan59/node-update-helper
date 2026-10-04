@@ -1,17 +1,17 @@
 window.__NODE_DATA__ = {
   "schema_version": 1,
-  "checked_at": "2026-09-14T01:29:08+00:00",
+  "checked_at": "2026-10-04T13:38:23+00:00",
   "interval_minutes": 30,
   "sources": [
     {
       "id": "github",
-      "name": "GitHub",
+      "name": "GitHub · V2Ray",
       "url": "https://github.com/Alvin9999-newpac/fanqiang/wiki/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7",
       "content_url": "https://raw.githubusercontent.com/wiki/Alvin9999-newpac/fanqiang/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7.md",
       "status": "ok",
       "stale": false,
-      "checked_at": "2026-09-14T01:29:05+00:00",
-      "last_success_at": "2026-09-14T01:29:08+00:00",
+      "checked_at": "2026-10-04T13:38:17+00:00",
+      "last_success_at": "2026-10-04T13:38:22+00:00",
       "page_edited_at": "2026-09-03T23:12:27Z",
       "page_edit_url": "https://github.com/Alvin9999-newpac/fanqiang/wiki/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7",
       "author_updated": {
@@ -114,13 +114,13 @@ window.__NODE_DATA__ = {
     },
     {
       "id": "gitlab",
-      "name": "GitLab",
+      "name": "GitLab · V2Ray",
       "url": "https://gitlab.com/zhifan999/fq/-/wikis/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7",
       "content_url": "https://gitlab.com/api/v4/projects/zhifan999%2Ffq/wikis/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7",
       "status": "ok",
       "stale": false,
-      "checked_at": "2026-09-14T01:29:05+00:00",
-      "last_success_at": "2026-09-14T01:29:08+00:00",
+      "checked_at": "2026-10-04T13:38:17+00:00",
+      "last_success_at": "2026-10-04T13:38:23+00:00",
       "page_edited_at": "2026-09-03T23:13:47Z",
       "page_edit_url": "https://gitlab.com/zhifan999/fq/-/wikis/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7/history",
       "author_updated": {
@@ -222,6 +222,95 @@ window.__NODE_DATA__ = {
       "error": null
     }
   ],
+  "ss_source": {
+    "id": "ss_gitlab",
+    "name": "GitLab · SS/SSR",
+    "url": "https://gitlab.com/zhifan999/fq/-/wikis/ss%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7",
+    "content_url": "https://gitlab.com/api/v4/projects/zhifan999%2Ffq/wikis/ss%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7",
+    "status": "ok",
+    "stale": false,
+    "checked_at": "2026-10-04T13:38:17+00:00",
+    "last_success_at": "2026-10-04T13:38:23+00:00",
+    "page_edited_at": "2026-08-15T11:50:26Z",
+    "page_edit_url": "https://gitlab.com/zhifan999/fq/-/wikis/ss%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7/history",
+    "author_updated": {
+      "raw": "北京时间2026年8月12日9点00分修复节点1",
+      "iso": "2026-08-12T09:00:00+08:00",
+      "precision": "minute"
+    },
+    "nodes": [
+      {
+        "id": 1,
+        "name": "节点1",
+        "protocol": "ssr",
+        "fields": [
+          {
+            "label": "节点",
+            "value": "IPv6 节点"
+          },
+          {
+            "label": "地址",
+            "value": "ssr2.762988.xyz"
+          },
+          {
+            "label": "端口",
+            "value": "33336"
+          },
+          {
+            "label": "密码",
+            "value": "dongtaiwang.com"
+          },
+          {
+            "label": "加密方式",
+            "value": "chacha20-ietf"
+          },
+          {
+            "label": "协议",
+            "value": "auth_chain_a"
+          },
+          {
+            "label": "混淆",
+            "value": "tls1.2_ticket_auth"
+          }
+        ],
+        "notes": "使用IPv6节点，本地网络需要开启IPv6支持。手机的电话卡流量通常自带IPv6网络，可以使用IPv6地址。手机可以通过热点功能将IPv6网络共享给电脑，这样电脑也能连接到IPv6网络。如果希望电脑自动启用宽带的IPv6网络，请参考相关的IPv6开启与配置教程。",
+        "import_url": "ssr://c3NyMi43NjI5ODgueHl6OjMzMzM2OmF1dGhfY2hhaW5fYTpjaGFjaGEyMC1pZXRmOnRsczEuMl90aWNrZXRfYXV0aDpaRzl1WjNSaGFYZGhibWN1WTI5dC8_b2Jmc3BhcmFtPSZyZW1hcmtzPVUxTlM2SXFDNTRLNQ",
+        "fingerprint": "b03dbefb5cde8452aa8d1bc090d8d218e9bec873c35ceb41f2e68ba35098b982"
+      },
+      {
+        "id": 2,
+        "name": "节点2",
+        "protocol": "ss",
+        "fields": [
+          {
+            "label": "节点",
+            "value": "IPv6 节点"
+          },
+          {
+            "label": "地址",
+            "value": "2001:bc8:32d7:17b::100"
+          },
+          {
+            "label": "端口",
+            "value": "22222"
+          },
+          {
+            "label": "密码",
+            "value": "github.com/Alvin9999-newpac/fanqiang"
+          },
+          {
+            "label": "加密方式",
+            "value": "aes-256-gcm"
+          }
+        ],
+        "notes": "使用IPv6节点，本地网络需要开启IPv6支持。手机的电话卡流量通常自带IPv6网络，可以使用IPv6地址。手机可以通过热点功能将IPv6网络共享给电脑，这样电脑也能连接到IPv6网络。如果希望电脑自动启用宽带的IPv6网络，请参考相关的IPv6开启与配置教程。",
+        "import_url": "ss://YWVzLTI1Ni1nY206Z2l0aHViLmNvbS9BbHZpbjk5OTktbmV3cGFjL2ZhbnFpYW5n@[2001:bc8:32d7:17b::100]:22222#SS-IPv6",
+        "fingerprint": "87ba1f50026dd673bb1a7ddd0b6ca2b021c13340bcb1ff87d962d7bf89ce6144"
+      }
+    ],
+    "warnings": [],
+    "error": null
+  },
   "comparison": {
     "status": "same",
     "nodes": {

@@ -3,7 +3,7 @@ let snapshot = null;
 let busy = false;
 let toastTimer;
 const LOCAL_KEY = 'node-helper-snapshot-v1';
-const names = { github: 'GitHub', gitlab: 'GitLab' };
+const names = { github: 'GitHub · V2Ray', gitlab: 'GitLab · V2Ray', ss_gitlab: 'GitLab · SS/SSR' };
 function compactTime(value, seconds = false) {
   if (!value || Number.isNaN(Date.parse(value))) return '未获取';
   const options = { timeZone: 'Asia/Shanghai', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
@@ -109,12 +109,13 @@ function sourceCard(source) {
   const url = new URL(source.url);
   if (url.protocol === 'https:' && ['github.com', 'gitlab.com'].includes(url.hostname)) origin.href = url.href;
   origin.target = '_blank'; origin.rel = 'noopener noreferrer';
-  origin.setAttribute('aria-label', `打开 ${source.name} 原始页面`);
-  origin.append(element('h2', '', source.name));
+  origin.setAttribute('aria-label', `打开 ${names[source.id] || source.name} 原始页面`);
+  origin.append(element('h2', '', names[source.id] || source.name));
   info.append(origin);
   const logo = element('img', 'source-logo');
-  logo.classList.add(`source-logo-${source.id}`);
-  logo.src = `./icons/${source.id}.svg`;
+  const logoId = source.id === 'ss_gitlab' ? 'gitlab' : source.id;
+  logo.classList.add(`source-logo-${logoId}`);
+  logo.src = `./icons/${logoId}.svg`;
   logo.alt = '';
   name.append(logo, info);
   const label = source.stale ? '上次成功数据' : source.status === 'ok' ? '获取正常' : source.status === 'partial' ? '部分获取' : '获取失败';
@@ -138,7 +139,8 @@ function sourceCard(source) {
   return card;
 }
 function valid(data) {
-  return data?.schema_version === 1 && Array.isArray(data.sources) && data.sources.length === 2 && data.latest && data.comparison && data.sources.every(s => names[s.id] && Array.isArray(s.nodes) && s.nodes.every(n => Array.isArray(n.fields) && typeof n.import_url === 'string' && typeof n.protocol === 'string'));
+  const validSource = s => Array.isArray(s.nodes) && s.nodes.every(n => Array.isArray(n.fields) && typeof n.import_url === 'string' && typeof n.protocol === 'string');
+  return data?.schema_version === 1 && Array.isArray(data.sources) && data.sources.length === 2 && data.latest && data.comparison && data.sources.every(s => ['github', 'gitlab'].includes(s.id) && validSource(s)) && (!data.ss_source || (data.ss_source.id === 'ss_gitlab' && validSource(data.ss_source)));
 }
 function render(data, cached = false) {
   snapshot = data;
@@ -152,6 +154,7 @@ function render(data, cached = false) {
   const staleAfterMinutes = Math.max(12 * 60, Number(data.interval_minutes || 30) * 24);
   if (age > staleAfterMinutes * 60 * 1000) alerts.push('后台检测已超过12小时未更新，请检查 GitHub Actions 是否正常运行。');
   if (data.sources.some(s => s.stale)) alerts.push('部分来源本次获取失败，卡片保留上次成功数据。');
+  if (data.ss_source?.stale) alerts.push('SS / SSR 来源本次获取失败，卡片保留上次成功数据。');
   $('notice').textContent = alerts.join(' ');
   $('notice').hidden = !alerts.length;
   const comparison = data.comparison;
@@ -160,13 +163,14 @@ function render(data, cached = false) {
   $('comparison-icon').textContent = comparison.status === 'same' ? '✓' : comparison.status === 'different' ? '!' : '?';
   $('summary-card').dataset.state = comparison.status;
   const source = data.sources.find(s => s.id === data.latest.source_id);
-  $('selection').textContent = source ? `当前为你选择的是 ${source.name} 的节点${data.latest.stale ? '（上次成功数据）' : ''}` : '暂时没有可用节点';
+  $('selection').textContent = source ? `当前为你选择的是 ${names[source.id] || source.name} 的节点${data.latest.stale ? '（上次成功数据）' : ''}` : '暂时没有可用节点';
   for (const [id, number] of [['copy-1', 1], ['copy-2', 2]]) $(id).disabled = !source?.nodes.some(node => node.id === number);
   // Keep disclosure state when the background read refreshes cards.
   const opened = new Set([...document.querySelectorAll('.source')].flatMap((card, i) => [...card.querySelectorAll('details')].flatMap((d, j) => d.open ? [`${i}:${j}`] : [])));
   const displayOrder = { gitlab: 0, github: 1 };
   const visibleSources = [...data.sources].sort((a, b) => displayOrder[a.id] - displayOrder[b.id]);
   $('sources').replaceChildren(...visibleSources.map(sourceCard));
+  $('ss-source').replaceChildren(data.ss_source ? sourceCard(data.ss_source) : element('p', 'empty', '等待下次后台检测取得 SS / SSR 节点。'));
   document.querySelectorAll('.source').forEach((sourceCardElement, i) => sourceCardElement.querySelectorAll('details').forEach((details, j) => {
     details.open = opened.has(`${i}:${j}`);
     details.closest('.node')?.classList.toggle('is-open', details.open);
@@ -209,6 +213,7 @@ async function refresh(manual = false) {
       $('comparison-icon').textContent = '?';
       $('summary-card').dataset.state = 'unknown';
       $('sources').replaceChildren(element('p', 'empty', '点击“刷新结果”重试。'));
+      $('ss-source').replaceChildren(element('p', 'empty', '暂无 SS / SSR 节点数据。'));
     }
     if (manual) notify(snapshot ? '读取失败，已保留缓存' : '读取失败，请稍后重试');
   } finally {
