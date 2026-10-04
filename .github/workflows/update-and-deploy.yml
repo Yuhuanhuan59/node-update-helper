@@ -39,7 +39,7 @@ jobs:
           path: site/data.json
           key: node-snapshot-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: node-snapshot-v1-
-      - name: Fetch both sources
+      - name: Fetch V2Ray and SS sources
         env:
           PAGES_BASE_URL: ${{ steps.pages.outputs.base_url }}
         run: python scripts/fetch_nodes.py --previous-url "${PAGES_BASE_URL%/}/data.json"
@@ -58,11 +58,15 @@ jobs:
           lines = ['## 节点检测结果', '', '检测时间：' + data['checked_at'], '']
           for source in data['sources']:
               lines.append('- ' + source['name'] + ': ' + source['status'] + ('（保留上次成功数据）' if source['stale'] else ''))
+          ss_source = data.get('ss_source')
+          if ss_source:
+              lines.append('- ' + ss_source['name'] + ': ' + ss_source['status'] + ('（保留上次成功数据）' if ss_source['stale'] else ''))
           lines += ['', data['latest']['reason']]
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as report:
               report.write('\n'.join(lines) + '\n')
-          if all(s['status'] == 'error' for s in data['sources']):
-              print('::warning::Both sources failed. The deployed page will show failure status and any last successful data.')
+          all_sources = data['sources'] + ([ss_source] if ss_source else [])
+          if all(s['status'] == 'error' for s in all_sources):
+              print('::warning::All sources failed. The deployed page will show failure status and any last successful data.')
           PY
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
