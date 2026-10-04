@@ -12,6 +12,30 @@ import fetch_nodes as fn
 
 VMESS = 'vmess://' + base64.b64encode(json.dumps({'add': '2001:db8::1', 'port': '12345', 'id': 'example-id', 'net': 'ws', 'ps': 'test'}).encode()).decode()
 ANYTLS = 'anytls://demo%2Fpassword@example.invalid:9443?security=tls&sni=example.invalid#demo'
+SSR = 'ssr://' + base64.urlsafe_b64encode(b'ssr.example.invalid:33336:auth_chain_a:chacha20-ietf:tls1.2_ticket_auth:cGFzcw').decode().rstrip('=')
+SS = 'ss://' + base64.urlsafe_b64encode(b'aes-256-gcm:password').decode().rstrip('=') + '@[2001:db8::2]:22222#SS-IPv6'
+SS_MD = f'''## SS/SSR免费账号/节点（长期更新）
+**更新时间：** 北京时间2026年8月12日9点00分修复节点1
+**🚀 节点1（SSR）**
+使用IPv6节点。
+| 节点 | 地址 | 端口 | 密码 | 加密方式 | 协议 | 混淆 |
+|---|---|---|---|---|---|---|
+| IPv6 节点 | ssr.example.invalid | 33336 | password | chacha20-ietf | auth_chain_a | tls1.2_ticket_auth | |
+**SSR节点链接**
+```bash
+{SSR}
+```
+**🚀 节点2（SS）**
+| 节点 | 地址 | 端口 | 密码 | 加密方式 |
+|---|---|---|---|---|
+| IPv6 节点 | 2001:db8::2 | 22222 | password | aes-256-gcm |
+**SS链接**
+```bash
+{SS}
+```
+***
+### 其他说明
+'''
 MD = f'''# 测试数据（非真实节点）
 **更新时间**：北京时间2026年9月4日7点30分更新节点2
 通知：2025年8月20日发生网络异常
@@ -51,6 +75,17 @@ def source(key='github'):
 
 
 class ParserTests(unittest.TestCase):
+    def test_ss_wiki_horizontal_tables_and_links(self):
+        nodes = fn.parse_ss_nodes(SS_MD.replace('\n', '\r\n'))
+        self.assertEqual([node['protocol'] for node in nodes], ['ssr', 'ss'])
+        self.assertEqual(nodes[0]['fields'][1], {'label': '地址', 'value': 'ssr.example.invalid'})
+        self.assertEqual(nodes[1]['import_url'], SS)
+        self.assertEqual(fn.parse_author_time(SS_MD)['precision'], 'minute')
+
+    def test_ss_wiki_rejects_missing_or_ambiguous_links(self):
+        with self.assertRaises(ValueError): fn.parse_ss_nodes(SS_MD.replace(SS, ''))
+        with self.assertRaises(ValueError): fn.parse_ss_nodes(SS_MD.replace(SSR, SSR + '\n' + SSR + 'x'))
+
     def test_structural_parsing(self):
         nodes = fn.parse_nodes(MD)
         self.assertEqual([n['id'] for n in nodes], [1, 2])
@@ -105,6 +140,17 @@ class ParserTests(unittest.TestCase):
 
 
 class RecoveryAndSelectionTests(unittest.TestCase):
+    def test_ss_source_failure_keeps_last_success(self):
+        def fetch(url):
+            return json.dumps({'content': SS_MD}) if url == fn.SS_SOURCE['content_url'] else GL_HTML
+        previous = fn.fetch_ss_source(fetch=fetch)
+        self.assertEqual(previous['status'], 'ok')
+        self.assertEqual(len(previous['nodes']), 2)
+        def fail(url): raise TimeoutError('offline')
+        failed = fn.fetch_ss_source(previous, fetch=fail)
+        self.assertTrue(failed['stale'])
+        self.assertEqual(failed['nodes'], previous['nodes'])
+
     def test_success_and_equal(self):
         a, b = source(), source('gitlab')
         comparison, latest = fn.summarize([a, b])
@@ -187,15 +233,17 @@ class RecoveryAndSelectionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / 'data.json'
             saved_sources = {key: source(key) for key in fn.SOURCES}
-            with patch.object(fn, 'fetch_source', side_effect=lambda key, prev: saved_sources[key]):
+            with patch.object(fn, 'fetch_source', side_effect=lambda key, prev: saved_sources[key]), patch.object(fn, 'fetch_ss_source', return_value=fn.fetch_ss_source(fetch=lambda url: json.dumps({'content': SS_MD}) if url == fn.SS_SOURCE['content_url'] else GL_HTML)):
                 first = fn.update(output)
             self.assertTrue(output.with_suffix('.js').read_text().startswith('window.__NODE_DATA__ = {'))
             original_fetch = fn.fetch_source
+            original_ss_fetch = fn.fetch_ss_source
             def fail(url): raise TimeoutError('offline')
-            with patch.object(fn, 'fetch_source', side_effect=lambda key, prev: original_fetch(key, prev, fetch=fail)):
+            with patch.object(fn, 'fetch_source', side_effect=lambda key, prev: original_fetch(key, prev, fetch=fail)), patch.object(fn, 'fetch_ss_source', side_effect=lambda prev: original_ss_fetch(prev, fetch=fail)):
                 second = fn.update(output)
             self.assertTrue(second['latest']['stale'])
             self.assertEqual(first['sources'][0]['nodes'], second['sources'][0]['nodes'])
+            self.assertEqual(first['ss_source']['nodes'], second['ss_source']['nodes'])
             self.assertEqual(json.loads(output.read_text())['sources'][0]['status'], 'error')
 
 
