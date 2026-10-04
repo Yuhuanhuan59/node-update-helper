@@ -1,6 +1,6 @@
 # 节点更新助手
 
-一个手机优先的静态 PWA：集中查看 GitHub / GitLab 两个公开 Wiki 的节点1、节点2，一键复制链接或完整参数，自动比较两站内容。后台使用 Python 标准库抓取，GitHub Actions 每30分钟生成 `site/data.json`，GitHub Pages 发布网页。无需服务器、数据库、API Key 或付费中转服务。
+一个手机优先的静态 PWA：集中查看 GitHub / GitLab 两个 V2Ray Wiki 的节点1、节点2，并独立展示 GitLab SS Wiki 的 SSR、SS 节点；可逐个复制链接或完整参数。V2Ray 两站内容自动比较。后台使用 Python 标准库抓取，GitHub Actions 每30分钟生成 `site/data.json`，GitHub Pages 发布网页。无需服务器、数据库、API Key 或付费中转服务。
 
 ## 立即部署到 GitHub Pages
 
@@ -32,7 +32,8 @@ git push -u origin main
 
 - **复制节点1 / 复制节点2**：两个按钮分别复制选中来源的单个节点导入链接，每次只复制一个节点。
 - **来源卡片 → 参数与导入链接**：展开参数表、原始链接和说明；可复制完整信息。
-- **刷新结果**：重新读取已发布的 `data.json`，不直接触发抓取。需要立即抓取时，到自己的 Actions 页面手动运行工作流。
+- **SS / SSR 节点**：页面下方单独显示 GitLab SS Wiki 的节点1（SSR）、节点2（SS）；各卡片上的“复制”只复制对应的单个导入链接。顶部比较和两个快捷复制按钮仍只针对 V2Ray 两站。
+- **刷新节点**：重新读取已发布的 `data.json`，不直接触发抓取。需要立即抓取时，到自己的 Actions 页面手动运行工作流。
 - 在前台打开的网页每5分钟读取一次后台结果；切回网页或恢复网络时也会读取。
 - 支持 PWA 的浏览器可从浏览器菜单安装；iPhone 可在 Safari 分享菜单中选择“添加到主屏幕”。离线前至少在线打开过一次。
 
@@ -62,12 +63,13 @@ git push -u origin main
 
 - [GitHub Wiki 原页面](https://github.com/Alvin9999-newpac/fanqiang/wiki/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7)
 - [GitLab Wiki 原页面](https://gitlab.com/zhifan999/fq/-/wikis/v2ray%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7)
+- [GitLab SS/SSR Wiki 原页面](https://gitlab.com/zhifan999/fq/-/wikis/ss%E5%85%8D%E8%B4%B9%E8%B4%A6%E5%8F%B7)
 
-GitHub 使用官方域名的 Wiki 原始 Markdown；GitLab 使用公开 Wiki API。两个来源并行、独立抓取，单次请求超时20秒，最多尝试3次，限制响应大小。前端只请求同站静态 JSON，没有跨域抓取问题。
+GitHub 使用官方域名的 Wiki 原始 Markdown；两个 GitLab 页面使用公开 Wiki API。三个来源并行、独立抓取，单次请求超时20秒，最多尝试3次，限制响应大小。前端只请求同站静态 JSON，没有跨域抓取问题。
 
-节点解析按 `节点1/节点2` 的粗体标题或 Markdown 标题分段，再寻找该节点的“一键导入链接”子标题和参数表。支持当前 VMess / AnyTLS，以及若干常见导入链接协议；不绑定 IP、域名、端口、UUID 或密码。VMess 会检查其 Base64 JSON 中的必需字段。
+V2Ray 节点解析按 `节点1/节点2` 的粗体标题或 Markdown 标题分段，再寻找该节点的“一键导入链接”子标题和参数表。支持当前 VMess / AnyTLS，以及若干常见导入链接协议；不绑定 IP、域名、端口、UUID 或密码。VMess 会检查其 Base64 JSON 中的必需字段。SS Wiki 使用独立解析：按节点标题定位 SSR、SS，读取横向参数表及对应的“SSR节点链接”/“SS链接”，不把教程中的其它链接误当节点。
 
-两个节点都完整才更新该来源。若缺少标题、表格或链接，或出现多个无法确定的链接，会将该来源判为失败并保留上次完整快照，避免把截断页面当成新数据。只有编辑时间获取失败时，保留本次新节点并将编辑时间显示为“未获取”；不会拿旧编辑时间冒充新内容的时间。
+每个来源的两个节点都完整才更新。若缺少标题、表格或链接，或出现多个无法确定的链接，会将该来源判为失败并保留上次完整快照，避免把截断页面当成新数据。SS 来源失败不影响两个 V2Ray 来源，反之亦然。只有编辑时间获取失败时，保留本次新节点并将编辑时间显示为“未获取”；不会拿旧编辑时间冒充新内容的时间。
 
 比对同时包含节点参数表与导入配置。忽略标签空白、URI 查询参数顺序、VMess JSON 格式与备注 `ps`、其他 URI 的显示名称 `#fragment`；保留连接地址、凭证、TLS 等参数。它是保守比对，不把不同参数名或不同编码形式的所有等价配置强行判为一致。以后作者大幅改变结构时，页面会显示解析失败，需要相应更新解析器。
 
@@ -79,7 +81,7 @@ Actions 缓存不是永久存储；缓存被回收时仍可从上一版 Pages �
 
 ### PWA 缓存
 
-Service worker 仅缓存页面外壳，使用网络优先策略，`data.json` 不进入 service worker 缓存。前端自己保存带检测时间的最后有效快照，网络失败时明确标注“本机缓存”。后台检测超过90分钟时提示检查 Actions；来源失败保留的内容始终标注旧数据。所有资源使用相对路径，适用于 `/仓库名/` 子路径。
+Service worker 仅缓存页面外壳，使用网络优先策略，`data.json` 不进入 service worker 缓存。前端自己保存带检测时间的最后有效快照，网络失败时明确标注“本机缓存”。后台检测超过12小时时提示检查 Actions；来源失败保留的内容始终标注旧数据。所有资源使用相对路径，适用于 `/仓库名/` 子路径。
 
 ## 本地运行与测试
 
@@ -89,7 +91,7 @@ Service worker 仅缓存页面外壳，使用网络优先策略，`data.json` �
 # 运行离线单元测试（不会请求真实站点）
 python3 -m unittest discover -s tests -v
 
-# 实际抓取两个来源，生成 site/data.json
+# 实际抓取两个 V2Ray 来源和一个 SS 来源，生成 site/data.json
 python3 scripts/fetch_nodes.py
 
 # 开启完整本地预览
@@ -112,7 +114,7 @@ node --check site/app.js
 node --check site/sw.js
 ```
 
-测试覆盖结构解析、CRLF/标题变化、动态地址和协议、非法和缺失链接、缺失参数表、编辑时间作用域、作者时间解析、语义比较、单站失败、元数据失败、两站失败、跨运行数据恢复以及最新来源选择。交付验证见 [TESTING.md](TESTING.md)。
+测试覆盖 V2Ray 与 SS/SSR 结构解析、CRLF/标题变化、动态地址和协议、非法和缺失链接、缺失参数表、编辑时间作用域、作者时间解析、语义比较、来源失败、元数据失败、跨运行数据恢复以及最新 V2Ray 来源选择。交付验证见 [TESTING.md](TESTING.md)。
 
 ## 文件结构
 
@@ -133,7 +135,7 @@ README.md
 TESTING.md
 ```
 
-`data.json` 顶层包括 `schema_version`、`checked_at`、`interval_minutes`、`sources`、`comparison` 和 `latest`。每个来源的 `status` 为 `ok`、`partial` 或 `error`；`stale` 表示节点来自此前快照；`warnings` 和 `error` 保存失败原因。最新选中来源在 `latest.source_id` 中，两站逐节点比较在 `comparison.nodes` 中。
+`data.json` 顶层包括 `schema_version`、`checked_at`、`interval_minutes`、`sources`、`ss_source`、`comparison` 和 `latest`。`sources` 中的两个 V2Ray 来源参与比较，独立的 `ss_source` 不参与比较。每个来源的 `status` 为 `ok`、`partial` 或 `error`；`stale` 表示节点来自此前快照；`warnings` 和 `error` 保存失败原因。最新选中 V2Ray 来源在 `latest.source_id` 中，两站逐节点比较在 `comparison.nodes` 中。
 
 ## 免费运行的边界与常见问题
 
